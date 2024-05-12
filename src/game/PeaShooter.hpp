@@ -9,7 +9,7 @@ protected:
     
 
 public:
-    PeaShooter(FileHandler plants_csv);
+    PeaShooter(FileHandler plants_properties);
     virtual ~PeaShooter();
 };
 

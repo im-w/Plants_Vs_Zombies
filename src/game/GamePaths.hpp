@@ -47,4 +47,4 @@ const std::string PLANTS_PROPERTIES_PATH = "./assets/properties/Plants.csv";
 const std::string ZOMBIES_PROPERTIES_PATH = "./assets/properties/Zombies.csv";
 const std::string ITEMS_PROPERTIES_PATH = "./assets/properties/Items.csv";
 
-#endif // ASSETPATHS_H
+#endif // GAMEPATHS_H

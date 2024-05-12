@@ -36,3 +36,4 @@ bool Icon::isHidden() {
 sf::Vector2f Icon::getPosition() {
     return m_sprite.getPosition();
 }
+

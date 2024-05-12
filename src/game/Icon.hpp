@@ -14,6 +14,7 @@ public:
     bool isHidden();
     sf::Sprite& getSprite();
     sf::Vector2f getPosition();
+    
 
 private:
     sf::Sprite m_sprite;

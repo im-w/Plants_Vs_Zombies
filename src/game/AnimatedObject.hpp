@@ -16,8 +16,9 @@ public:
     void stop();
     void update(sf::Time deltaTime);
     void draw(sf::RenderWindow& window);
+    void setScale(float scale_x, float scale_y);
     sf::Vector2f getPosition() const;
-
+    sf::Sprite& getSprite();
 private:
     sf::Sprite m_sprite;
     std::map<std::string, Animation> m_animations;

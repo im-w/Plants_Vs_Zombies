@@ -8,6 +8,14 @@ void AnimatedObject::setPosition(float x, float y) {
     m_sprite.setPosition(x, y);
 }
 
+void AnimatedObject::setScale(float scale_x, float scale_y) {
+    m_sprite.setScale(scale_x, scale_y);
+}
+
+sf::Sprite& AnimatedObject::getSprite() {
+    return m_sprite;
+}
+
 void AnimatedObject::setTexture(const sf::Texture& texture) {
     m_sprite.setTexture(texture);
 }

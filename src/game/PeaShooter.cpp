@@ -1,6 +1,13 @@
 #include "PeaShooter.hpp"
 
-PeaShooter::PeaShooter(FileHandler plants_csv)
-    : ShooterPlant(stoi(plants_csv.getData("peashooter", "health")), stoi(plants_csv.getData("peashooter", "cooldown")), stoi(plants_csv.getData("peashooter", "price")), stoi(plants_csv.getData("peashooter", "damage")), stoi(plants_csv.getData("peashooter", "hit rate")), stoi(plants_csv.getData("peashooter", "bullet speed"))) {}
+PeaShooter::PeaShooter(FileHandler plants_properties)
+    : ShooterPlant(
+        std::stoi(plants_properties.getData("PeaShooter", "health")), 
+        std::stoi(plants_properties.getData("PeaShooter", "cooldown")), 
+        std::stoi(plants_properties.getData("PeaShooter", "price")), 
+        std::stoi(plants_properties.getData("PeaShooter", "damage")), 
+        std::stoi(plants_properties.getData("PeaShooter", "hit rate")), 
+        std::stoi(plants_properties.getData("PeaShooter", "bullet speed"))
+    ) {}
 
 PeaShooter::~PeaShooter() {}
