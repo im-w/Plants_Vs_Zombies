@@ -7,9 +7,12 @@ class Zombie : public AnimatedObject {
 protected:
     int health;
     int speed;
+    int damage;
+    int timeToSpawn;
+    int hitRate;
 
 public:
-    Zombie(int health, int speed);
+    Zombie(int health, int speed,int damage, int timeToSpawn, int hitRate);
     virtual ~Zombie();
 };
 
