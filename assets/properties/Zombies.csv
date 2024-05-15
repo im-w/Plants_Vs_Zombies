@@ -1,1 +1,4 @@
-type,damage,health,hit rate,speedregular,10,50,5,7hairMetalGragantuar,20,80,6,5
+type,damage,health,hit rate,speed,time,none
+regular,10,50,5,7,8,0
+buckethead,15,60,5,7,8,0
+Gragantuar,20,80,6,5,30,0

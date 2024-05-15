@@ -12,6 +12,10 @@ protected:
 public:
     Plant(int health, int cooldown, int price);
     virtual ~Plant();
+    void takeDamage(int damage);
+    bool isDead();
+
+
 };
 
 #endif // PLANT_HPP

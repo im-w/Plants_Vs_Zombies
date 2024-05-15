@@ -1,6 +1,5 @@
 # include "./game/Game.hpp"
-# include "./utils/AssetManager.hpp"
-# include "./utils/FileHandler.hpp"
+
 
 
 
@@ -16,27 +15,24 @@ int main() {
 //     window.setFramerateLimit(120);
     
 //     AssetManager assetManager;
-//     FileHandler plants_properties(PLANTS_PROPERTIES_PATH);
+//     FileHandler plants_properties(ZOMBIES_PROPERTIES_PATH);
 
-//     // Load the photo texture
-//     sf::Texture photoTexture;
-//     if (!photoTexture.loadFromFile(PEASHOOTER_PLANT_IDLE_ANIMATION_PATH)) {
-//         // Handle error loading photo
-//         return;
-//     }
+
+
 
 //     // Create an instance of the Animation class and load animation
-//     assetManager.LoadTexture("pea_shooter_idle_animation", PEASHOOTER_PLANT_IDLE_ANIMATION_PATH);
-//     assetManager.LoadAnimation("pea_shooter_idle_animation", PEASHOOTER_PLANT_IDLE_ANIMATION_PATH, 620, 877, 77, 40, true);
+//     assetManager.LoadTexture("pea_shooter_idle_animation", REGULAR_ZOMBIE_WALKING_ANIMATION_PATH);
+//     assetManager.LoadAnimation("pea_shooter_idle_animation", REGULAR_ZOMBIE_WALKING_ANIMATION_PATH, 620, 877, 12, 100, true);
     
 //     // Create a vector to hold PeaShooter instances
-//     std::vector<std::unique_ptr<Plant>> plants;
+//     std::vector<std::unique_ptr<Zombie>> plants;
 
 //     // Create PeaShooter instance
-//     auto peashooter = std::make_unique<PeaShooter>(plants_properties);
+//     auto peashooter = std::make_unique<RegularZombie>(plants_properties);
 //     peashooter->setTexture(assetManager.GetTexture("pea_shooter_idle_animation"));
 //     peashooter->addAnimation("idle", assetManager.GetAnimation("pea_shooter_idle_animation"));
 //     peashooter->setPosition(100, 100);
+//     peashooter->initHitbox();
 
 //     // Add PeaShooter to the vector
 //     plants.push_back(std::move(peashooter));
@@ -63,6 +59,8 @@ int main() {
 //         // Draw all plants
 //         for (auto& plant : plants) {
 //             plant->draw(window);
+//             plant->drawHitbox(window);
+
 //         }
         
 //         window.display();

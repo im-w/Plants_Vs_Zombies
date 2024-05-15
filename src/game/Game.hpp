@@ -16,6 +16,13 @@
 #include "WallNut.hpp"
 #include "MelonPlut.hpp"
 #include "SunFlower.hpp"
+#include "Zombie.hpp"
+#include "RegularZombie.hpp"
+#include "BucketHeadZombie.hpp"
+#include "Gargantuar.hpp"
+#include "Bullet.hpp"
+
+
 
 
 
@@ -31,14 +38,17 @@ private:
     void render();
     sf::Vector2f normalizePosition(int x, int y);
     void resizeSpriteToScreenXPercentage(sf::Sprite& sprite, float percentage, sf::RenderWindow& window);
-    std::unique_ptr<Plant> createPlant(const std::string& plantSubclassName);
-    void addPlant(const std::string& plantSubclassName);
+    void createPlant(const std::string& plantSubclassName);
     std::string selected_plant; // Store the name of the selected plant
     void scaleSpriteToMatch(sf::Sprite& newSprite, const sf::Sprite& oldSprite);
     void positionSpriteToMatch(sf::Sprite& newSprite, const sf::Sprite& oldSprite);
     void drawSpriteDebugOutline(sf::RenderWindow& window, const sf::Sprite& sprite);
+    std::unique_ptr<Zombie> createZombie(const std::string& zombieSubclassName);
+    void addZombie(const std::string& zombieSubclassName, int line);
+    bool spritesIntersect(const sf::Sprite& sprite1, const sf::Sprite& sprite2);
+    bool spriteRectangleIntersect(const sf::Sprite& sprite, const sf::RectangleShape& rectangle);
 
-    int sunPoints;
+    int sun_valet = 0;
     sf::RenderWindow window;
     sf::ContextSettings settings;
     AssetManager assetManager;
@@ -47,11 +57,18 @@ private:
     Icon select_icon;
     std::vector<std::unique_ptr<Icon>> places;  // Vector to store plant placement icons
     sf::Clock clock;
-    std::vector<std::unique_ptr<Plant>> plants;
+    std::vector<std::unique_ptr<ShooterPlant>> shooterPlant_plants;
+    std::vector<std::unique_ptr<SunProducerPlant>> sunProducerPlant_plants;
+    std::vector<std::unique_ptr<DefenderPlant>> defenderPlant_plants;
+    std::vector<std::unique_ptr<Zombie>> line1_zombies;
+    std::vector<std::unique_ptr<Zombie>> line2_zombies;
+    std::vector<std::unique_ptr<Zombie>> line3_zombies;
+    std::vector<std::unique_ptr<Zombie>> line4_zombies;
+    std::vector<std::unique_ptr<Zombie>> line5_zombies;
+    std::vector<std::unique_ptr<Bullet>> bullets;
     FileHandler plants_properties;
     FileHandler zombies_properties;
     FileHandler items_properties;
-
 
 };
 

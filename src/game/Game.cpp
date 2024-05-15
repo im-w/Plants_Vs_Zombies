@@ -2,9 +2,9 @@
 
 
 // Constructor
-Game::Game() : window(sf::VideoMode::getFullscreenModes()[0], "Plants vs. Zombies", sf::Style::Fullscreen)
+Game::Game() : window(sf::VideoMode(1920, 1080), "Plants vs. Zombies", sf::Style::Default)
 , plants_properties(PLANTS_PROPERTIES_PATH) , zombies_properties(ZOMBIES_PROPERTIES_PATH) , items_properties(ITEMS_PROPERTIES_PATH) {
-    window.setFramerateLimit(30);
+    window.setFramerateLimit(60);
 
     assetManager.LoadTexture("background", BACKGROUND_IMAGE_PATH);
     backgroundSprite.setTexture(assetManager.GetTexture("background"));
@@ -27,8 +27,6 @@ Game::Game() : window(sf::VideoMode::getFullscreenModes()[0], "Plants vs. Zombie
     new_card_position = normalizePosition(-95, -10);
     cards.push_back(std::make_unique<Card>("SnowPea",SNOW_PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
     new_card_position = normalizePosition(-95, 25);
-    cards.push_back(std::make_unique<Card>("MelonPlut",MELON_PLUT_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
-    new_card_position = normalizePosition(-95, 60);
     cards.push_back(std::make_unique<Card>("WallNut",WALL_NUT_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
 
     // Resize the sprites of the cards
@@ -59,6 +57,20 @@ Game::Game() : window(sf::VideoMode::getFullscreenModes()[0], "Plants vs. Zombie
         places[i]->setPosition(position.x, position.y);
         resizeSpriteToScreenXPercentage(places[i]->getSprite(), 6, window);  // Adjust size to fit the screen
     }
+
+    
+    addZombie("RegularZombie" , 2);
+    addZombie("BucketHeadZombie" , 1);
+    addZombie("Gargantuar" , 3);
+    addZombie("RegularZombie" , 5);
+
+    
+
+
+    
+    
+
+    
 
 }
 
@@ -122,9 +134,15 @@ void Game::processEvents() {
                     for (auto& place : places) {
                         if (place->getSprite().getGlobalBounds().contains(mousePosition)) {
                             if (selected_plant != "") {
-                                addPlant(selected_plant);
+                                createPlant(selected_plant);
                                 //scaleSpriteToMatch(plants.back()->getSprite(),place->getSprite());
-                                positionSpriteToMatch(plants.back()->getSprite(),place->getSprite());
+                                if (selected_plant == "PeaShooter" || selected_plant == "SnowPea") {
+                                    positionSpriteToMatch(shooterPlant_plants.back()->getSprite(),place->getSprite());
+                                } else if (selected_plant == "SunFlower") {
+                                    positionSpriteToMatch(sunProducerPlant_plants.back()->getSprite(),place->getSprite());
+                                } else if (selected_plant == "WallNut") {
+                                    positionSpriteToMatch(defenderPlant_plants.back()->getSprite(),place->getSprite());
+                                }
                                 selected_plant = "";
 
                             }
@@ -135,6 +153,10 @@ void Game::processEvents() {
                     if (!iconToggled) {
                         select_icon.hide();
                     }
+                } else if (event.mouseButton.button == sf::Mouse::Right) {
+                    // Print the position of the right-click
+                    mousePosition = window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+                    std::cout << "Right-clicked at position: (" << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
                 }
                 break;
             case sf::Event::Closed:
@@ -153,8 +175,174 @@ void Game::processEvents() {
 // Update game state
 void Game::update() {
     sf::Time elapsedTime = clock.restart();
-    for (auto& plant : plants) {
+    
+    // Update plants
+    for (auto& plant : shooterPlant_plants) {
         plant->update(elapsedTime);
+        plant->increaseTimeSinceLastShot(elapsedTime); // Increase time since last shot for each plant
+        if (plant->canShoot()) { // Check if plant can shoot based on its hit rate
+            if (plant->zombieInRange(line1_zombies) || plant->zombieInRange(line2_zombies) || plant->zombieInRange(line3_zombies) || plant->zombieInRange(line4_zombies) || plant->zombieInRange(line5_zombies)) {
+                plant->shoot(bullets, assetManager);
+                plant->resetTimeSinceLastShot(); // Reset time since last shot after shooting
+            }
+        }
+    }
+    for (auto& plant : sunProducerPlant_plants) {
+        plant->update(elapsedTime);
+    }
+    for (auto& plant : defenderPlant_plants) {
+        plant->update(elapsedTime);
+    }
+
+    // Update zombies
+    for (auto& zombie : line1_zombies) {
+        zombie->update(elapsedTime);
+        zombie->move(elapsedTime);
+        for (auto& bullet : bullets) {
+            if(spriteRectangleIntersect(bullet->getSprite(),zombie->getHitbox())) {
+                zombie->takeDamage(bullet->getDamage());
+                bullets.erase(std::remove(bullets.begin(), bullets.end(), bullet), bullets.end());
+                break;
+            }
+        }
+        for (auto& plant : shooterPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : sunProducerPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : defenderPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+    }
+    for (auto& zombie : line2_zombies) {
+        zombie->update(elapsedTime);
+        zombie->move(elapsedTime);
+        for (auto& bullet : bullets) {
+            if(spriteRectangleIntersect(bullet->getSprite(),zombie->getHitbox())) {
+                zombie->takeDamage(bullet->getDamage());
+                bullets.erase(std::remove(bullets.begin(), bullets.end(), bullet), bullets.end());
+                break;
+            }
+        }
+        for (auto& plant : shooterPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : sunProducerPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : defenderPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+    }
+    for (auto& zombie : line3_zombies) {
+        zombie->update(elapsedTime);
+        zombie->move(elapsedTime);
+        for (auto& bullet : bullets) {
+            if(spriteRectangleIntersect(bullet->getSprite(),zombie->getHitbox())) {
+                zombie->takeDamage(bullet->getDamage());
+                bullets.erase(std::remove(bullets.begin(), bullets.end(), bullet), bullets.end());
+                break;
+            }
+        }
+        for (auto& plant : shooterPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : sunProducerPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : defenderPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+    }
+    for (auto& zombie : line4_zombies) {
+        zombie->update(elapsedTime);
+        zombie->move(elapsedTime);
+        for (auto& bullet : bullets) {
+            if(spriteRectangleIntersect(bullet->getSprite(),zombie->getHitbox())) {
+                zombie->takeDamage(bullet->getDamage());
+                bullets.erase(std::remove(bullets.begin(), bullets.end(), bullet), bullets.end());
+                break;
+            }
+        }
+        for (auto& plant : shooterPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : sunProducerPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : defenderPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+    }
+    for (auto& zombie : line5_zombies) {
+        zombie->update(elapsedTime);
+        zombie->move(elapsedTime);
+        for (auto& bullet : bullets) {
+            if(spriteRectangleIntersect(bullet->getSprite(),zombie->getHitbox())) {
+                zombie->takeDamage(bullet->getDamage());
+                bullets.erase(std::remove(bullets.begin(), bullets.end(), bullet), bullets.end());
+                break;
+            }
+        }
+        for (auto& plant : shooterPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : sunProducerPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+        for (auto& plant : defenderPlant_plants) {
+            if(spriteRectangleIntersect(plant->getSprite(),zombie->getHitbox())) {
+                zombie->stopMovementFor(sf::seconds(1));
+                plant->takeDamage(zombie->getDamage());
+            }
+        }
+    }
+    for (auto& bullet : bullets) {
+        bullet->update(elapsedTime);
+        bullet->move(elapsedTime);
     }
 }
 
@@ -168,9 +356,75 @@ void Game::render() {
     for (auto& place : places) {
         place->draw(window);  // Draw each placement icon
     }
-    for (auto& plant : plants) {
-        plant->draw(window); // Draw each plant
-        drawSpriteDebugOutline(window,plant->getSprite());
+    for (auto& plant : shooterPlant_plants) {
+        plant->draw(window);
+        drawSpriteDebugOutline(window, plant->getSprite());
+        if(plant->isDead()) {
+            shooterPlant_plants.erase(std::remove(shooterPlant_plants.begin(), shooterPlant_plants.end(), plant), shooterPlant_plants.end());
+        }
+    }
+    for (auto& plant : sunProducerPlant_plants) {
+        plant->draw(window);
+        drawSpriteDebugOutline(window, plant->getSprite());
+        if(plant->isDead()) {
+            sunProducerPlant_plants.erase(std::remove(sunProducerPlant_plants.begin(), sunProducerPlant_plants.end(), plant), sunProducerPlant_plants.end());
+        }
+    }
+    for (auto& plant : defenderPlant_plants) {
+        plant->draw(window);
+        drawSpriteDebugOutline(window, plant->getSprite());
+        if(plant->isDead()) {
+            defenderPlant_plants.erase(std::remove(defenderPlant_plants.begin(), defenderPlant_plants.end(), plant), defenderPlant_plants.end());
+        }
+    }
+    for (auto& zombie : line1_zombies) {
+        zombie->draw(window);
+        zombie->drawHitbox(window);
+        drawSpriteDebugOutline(window, zombie->getSprite());
+        if(zombie->isDead()) {
+            line1_zombies.erase(std::remove(line1_zombies.begin(), line1_zombies.end(), zombie), line1_zombies.end());
+        }
+    }
+    for (auto& zombie : line2_zombies) {
+        zombie->draw(window);
+        zombie->drawHitbox(window);
+        drawSpriteDebugOutline(window, zombie->getSprite());
+        if(zombie->isDead()) {
+            line2_zombies.erase(std::remove(line2_zombies.begin(), line2_zombies.end(), zombie), line2_zombies.end());
+        }
+    }
+    for (auto& zombie : line3_zombies) {
+        zombie->draw(window);
+        zombie->drawHitbox(window);
+        drawSpriteDebugOutline(window, zombie->getSprite());
+        if(zombie->isDead()) {
+            line3_zombies.erase(std::remove(line3_zombies.begin(), line3_zombies.end(), zombie), line3_zombies.end());
+        }
+    }
+    for (auto& zombie : line4_zombies) {
+        zombie->draw(window);
+        zombie->drawHitbox(window);
+        drawSpriteDebugOutline(window, zombie->getSprite());
+        if(zombie->isDead()) {
+            line4_zombies.erase(std::remove(line4_zombies.begin(), line4_zombies.end(), zombie), line4_zombies.end());
+        }
+    }
+    for (auto& zombie : line5_zombies) {
+        zombie->draw(window);
+        zombie->drawHitbox(window);
+        drawSpriteDebugOutline(window, zombie->getSprite());
+        if(zombie->isDead()) {
+            line5_zombies.erase(std::remove(line5_zombies.begin(), line5_zombies.end(), zombie), line5_zombies.end());
+        }
+    }
+    for (auto& bullet : bullets) {
+        bullet->draw(window);
+        drawSpriteDebugOutline(window, bullet->getSprite());
+        if (bullet->getPosition().x > window.getSize().x) {
+            bullets.erase(std::remove(bullets.begin(), bullets.end(), bullet), bullets.end());
+            break;
+        }
+    
     }
     select_icon.draw(window);
     window.display();
@@ -201,7 +455,7 @@ void Game::resizeSpriteToScreenXPercentage(sf::Sprite& sprite, float percentage,
     sprite.setScale(scaleX, scaleY);
 }
 
-std::unique_ptr<Plant> Game::createPlant(const std::string& plantSubclassName) {
+void Game::createPlant(const std::string& plantSubclassName) {
     if (plantSubclassName == "PeaShooter") {
         assetManager.LoadTexture("pea_shooter_idle_animation", PEASHOOTER_PLANT_IDLE_ANIMATION_PATH);
         assetManager.LoadAnimation("pea_shooter_idle_animation", PEASHOOTER_PLANT_IDLE_ANIMATION_PATH, 620, 877, 77, 40, true);
@@ -210,7 +464,8 @@ std::unique_ptr<Plant> Game::createPlant(const std::string& plantSubclassName) {
         peashooter->setTexture(assetManager.GetTexture("pea_shooter_idle_animation"));
         peashooter->addAnimation("idle", assetManager.GetAnimation("pea_shooter_idle_animation"));
         peashooter->getSprite().setScale(0.13,0.13);
-        return peashooter;
+        shooterPlant_plants.push_back(std::move(peashooter));
+        return;
     } else if (plantSubclassName == "SunFlower") {
         assetManager.LoadTexture("sunflower_idle_animation", SUNFLOWER_PLANT_IDLE_ANIMATION_PATH);
         assetManager.LoadAnimation("sunflower_idle_animation", SUNFLOWER_PLANT_IDLE_ANIMATION_PATH, 620, 877, 54, 50, true);
@@ -219,7 +474,8 @@ std::unique_ptr<Plant> Game::createPlant(const std::string& plantSubclassName) {
         sunflower->setTexture(assetManager.GetTexture("sunflower_idle_animation"));
         sunflower->addAnimation("idle", assetManager.GetAnimation("sunflower_idle_animation"));
         sunflower->getSprite().setScale(0.15,0.15);
-        return sunflower;
+        sunProducerPlant_plants.push_back(std::move(sunflower));
+        return;
     } else if (plantSubclassName == "SnowPea") {
         assetManager.LoadTexture("snowpea_idle_animation", SNOW_PEA_PLANT_IDLE_ANIMATION_PATH);
         assetManager.LoadAnimation("snowpea_idle_animation", SNOW_PEA_PLANT_IDLE_ANIMATION_PATH, 620, 877, 20, 100, true);
@@ -228,7 +484,8 @@ std::unique_ptr<Plant> Game::createPlant(const std::string& plantSubclassName) {
         snowPea->setTexture(assetManager.GetTexture("snowpea_idle_animation"));
         snowPea->addAnimation("idle", assetManager.GetAnimation("snowpea_idle_animation"));
         snowPea->getSprite().setScale(0.15,0.15);
-        return snowPea;
+        shooterPlant_plants.push_back(std::move(snowPea));
+        return;
     } else if (plantSubclassName == "WallNut") {
         assetManager.LoadTexture("wallnut_idle_animation", WALL_NUT_PLANT_IDLE_ANIMATION_PATH);
         assetManager.LoadAnimation("wallnut_idle_animation", WALL_NUT_PLANT_IDLE_ANIMATION_PATH, 620, 877, 16, 250, true);
@@ -237,30 +494,84 @@ std::unique_ptr<Plant> Game::createPlant(const std::string& plantSubclassName) {
         wallNut->setTexture(assetManager.GetTexture("wallnut_idle_animation"));
         wallNut->addAnimation("idle", assetManager.GetAnimation("wallnut_idle_animation"));
         wallNut->getSprite().setScale(0.15,0.15);
-        return wallNut;
-    } else if (plantSubclassName == "MelonPlut") {
-        assetManager.LoadTexture("melonpult_idle_animation", MELON_PLUT_PLANT_IDLE_ANIMATION_PATH);
-        assetManager.LoadAnimation("melonpult_idle_animation", MELON_PLUT_PLANT_IDLE_ANIMATION_PATH, 270, 290, 18, 100, true);
-
-        auto melonPult = std::make_unique<MelonPlut>(plants_properties);
-        melonPult->setTexture(assetManager.GetTexture("melonpult_idle_animation"));
-        melonPult->addAnimation("idle", assetManager.GetAnimation("melonpult_idle_animation"));
-        melonPult->getSprite().setScale(0.4,0.4);
-        return melonPult;
+        defenderPlant_plants.push_back(std::move(wallNut));
+        return;
     } else {
         // Handle unknown plant subclass
-        return nullptr;
+        return;
     }
 }
 
 
-void Game::addPlant(const std::string& plantSubclassName) {
-    std::unique_ptr<Plant> newPlant = createPlant(plantSubclassName);
-    if (newPlant) {
-        plants.push_back(std::move(newPlant));
+std::unique_ptr<Zombie> Game::createZombie(const std::string& zombieSubclassName) {
+    if (zombieSubclassName == "RegularZombie") {
+        assetManager.LoadTexture("regular_zombie_walking_animation", REGULAR_ZOMBIE_WALKING_ANIMATION_PATH);
+        assetManager.LoadAnimation("regular_zombie_walking_animation", REGULAR_ZOMBIE_WALKING_ANIMATION_PATH, 620, 877, 15, 174, true);
+
+        auto regularZombie = std::make_unique<RegularZombie>(zombies_properties);
+        regularZombie->setTexture(assetManager.GetTexture("regular_zombie_walking_animation"));
+        regularZombie->addAnimation("walking", assetManager.GetAnimation("regular_zombie_walking_animation"));
+        regularZombie->getSprite().setScale(0.3, 0.3);
+        regularZombie->initHitbox();
+        return regularZombie;
+    } else if (zombieSubclassName == "BucketHeadZombie") {
+        assetManager.LoadTexture("buckethead_zombie_walking_animation", BUCKETHEAD_ZOMBIE_WALKING_ANIMATION_PATH);
+        assetManager.LoadAnimation("buckethead_zombie_walking_animation", BUCKETHEAD_ZOMBIE_WALKING_ANIMATION_PATH, 620, 877, 14, 140, true);
+
+        auto bucketHeadZombie = std::make_unique<BucketHeadZombie>(zombies_properties);
+        bucketHeadZombie->setTexture(assetManager.GetTexture("buckethead_zombie_walking_animation"));
+        bucketHeadZombie->addAnimation("walking", assetManager.GetAnimation("buckethead_zombie_walking_animation"));
+        bucketHeadZombie->getSprite().setScale(0.3, 0.3);
+        bucketHeadZombie->initHitbox();
+        return bucketHeadZombie;
+    } else if (zombieSubclassName == "Gargantuar") {
+        assetManager.LoadTexture("gargantuar_zombie_walking_animation", GARGANTUAR_ZOMBIE_WALKING_ANIMATION_PATH);
+        assetManager.LoadAnimation("gargantuar_zombie_walking_animation", GARGANTUAR_ZOMBIE_WALKING_ANIMATION_PATH, 600, 800, 48, 70, true);
+
+        auto gargantuarZombie = std::make_unique<Gargantuar>(zombies_properties);
+        gargantuarZombie->setTexture(assetManager.GetTexture("gargantuar_zombie_walking_animation"));
+        gargantuarZombie->addAnimation("walking", assetManager.GetAnimation("gargantuar_zombie_walking_animation"));
+        gargantuarZombie->getSprite().setScale(0.3, 0.3);
+        gargantuarZombie->initHitbox();
+        return gargantuarZombie;
     } else {
-        // Handle failure to create plant
-        std::cout << "Failed to create plant of subclass: " << plantSubclassName << std::endl;
+        // Handle unknown zombie subclass
+        return nullptr;
+    }
+}
+
+void Game::addZombie(const std::string& zombieSubclassName, int line) {
+    std::unique_ptr<Zombie> newZombie = createZombie(zombieSubclassName);
+    if (newZombie) {
+        // Add the zombie to the corresponding line vector
+        switch (line) {
+            case 1:
+                newZombie->setPosition(1920,87);
+                line1_zombies.push_back(std::move(newZombie));
+                break;
+            case 2:
+                newZombie->setPosition(1920,245);
+                line2_zombies.push_back(std::move(newZombie));
+                break;
+            case 3:
+                newZombie->setPosition(1920,361);
+                line3_zombies.push_back(std::move(newZombie));
+                break;
+            case 4:
+                newZombie->setPosition(1920,493);
+                line4_zombies.push_back(std::move(newZombie));
+                break;
+            case 5:
+                newZombie->setPosition(1920,630);
+                line5_zombies.push_back(std::move(newZombie));
+                break;
+            default:
+                std::cout << "Invalid line number: " << line << std::endl;
+                break;
+        }
+    } else {
+        // Handle failure to create zombie
+        std::cout << "Failed to create zombie of subclass: " << zombieSubclassName << std::endl;
     }
 }
 
@@ -298,4 +609,22 @@ void Game::drawSpriteDebugOutline(sf::RenderWindow& window, const sf::Sprite& sp
     outline.setOutlineColor(sf::Color::Red);
     outline.setOutlineThickness(2.0f);
     window.draw(outline);
+}
+
+bool Game::spritesIntersect(const sf::Sprite& sprite1, const sf::Sprite& sprite2) {
+    // Get the global bounds of the sprites
+    sf::FloatRect bounds1 = sprite1.getGlobalBounds();
+    sf::FloatRect bounds2 = sprite2.getGlobalBounds();
+
+    // Check if the bounds intersect
+    return bounds1.intersects(bounds2);
+}
+
+bool Game::spriteRectangleIntersect(const sf::Sprite& sprite, const sf::RectangleShape& rectangle) {
+    // Get the global bounds of the sprite and the rectangle
+    sf::FloatRect spriteBounds = sprite.getGlobalBounds();
+    sf::FloatRect rectBounds = rectangle.getGlobalBounds();
+
+    // Check if the bounds intersect
+    return spriteBounds.intersects(rectBounds);
 }

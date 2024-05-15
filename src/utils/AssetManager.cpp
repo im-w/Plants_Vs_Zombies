@@ -15,6 +15,12 @@ void AssetManager::LoadTexture(std::string name, std::string fileName) {
 }
 
 void AssetManager::LoadAnimation(std::string name, std::string fileName, int each_frame_x_size, int each_frame_y_size, int total_frame_number, int frame_time_in_ms, bool isLoop) {
+    // Check if the animation with the given name already exists
+    if (m_animations.find(name) != m_animations.end()) {
+        // Animation with the given name already exists, no need to load anything
+        return;
+    }
+
     sf::Texture texture;
     if (texture.loadFromFile(fileName)) {
         Animation animation;

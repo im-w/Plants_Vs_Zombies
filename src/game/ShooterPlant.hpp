@@ -2,16 +2,32 @@
 #define SHOOTERPLANT_HPP
 
 #include "Plant.hpp"
+#include "Bullet.hpp"
+#include "Zombie.hpp"
+#include "../utils/AssetManager.hpp"
 
 class ShooterPlant : public Plant {
 protected:
     int damage;
-    float hitRate;
-    float bulletSpeed;
+    int hitRate;
+    int bulletSpeed;
+    sf::Time timeSinceLastShot;
 
 public:
-    ShooterPlant(int health, int cooldown, int price, int damage, float hitRate, float bulletSpeed);
+    ShooterPlant(int health, int cooldown, int price, int damage, int hitRate, int bulletSpeed);
     virtual ~ShooterPlant();
+
+    // Virtual shoot function to be overridden by subclasses
+    virtual void shoot(std::vector<std::unique_ptr<Bullet>>& bullets , AssetManager& assetManager);
+
+    bool zombieInRange(std::vector<std::unique_ptr<Zombie>>& zombies);
+
+    // int getDamage();
+    int getHitrate();
+    void increaseTimeSinceLastShot(sf::Time elapsedTime);
+    void resetTimeSinceLastShot();
+    bool canShoot();
+
 };
 
 #endif // SHOOTERPLANT_HPP
