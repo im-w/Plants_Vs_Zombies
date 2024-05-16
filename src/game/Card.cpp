@@ -1,6 +1,6 @@
 #include "Card.hpp"
 
-Card::Card(std::string plant_subclass_name, const std::string &imagePath, float x, float y)
+Card::Card(std::string plant_subclass_name, int price, const std::string &imagePath, float x, float y)
 {
     if (!m_texture.loadFromFile(imagePath))
     {
@@ -9,6 +9,7 @@ Card::Card(std::string plant_subclass_name, const std::string &imagePath, float 
     m_sprite.setTexture(m_texture);
     setPosition(x, y);
     m_plant_subclass_name = plant_subclass_name;
+    m_price = price;
 }
 
 void Card::setPosition(float x, float y)
@@ -29,4 +30,9 @@ sf::Sprite &Card::getSprite()
 std::string Card::getPlantName()
 {
     return m_plant_subclass_name;
+}
+
+int Card::getPrice()
+{
+    return m_price;
 }

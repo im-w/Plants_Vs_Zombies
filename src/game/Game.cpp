@@ -7,12 +7,13 @@ Game::Game() : window(sf::VideoMode(1920, 1080), "Plants vs. Zombies", sf::Style
     setupBackground();
     setupCrads();
     setupIcons();
+    sun_generate_interval = std::stoi(items_properties.getData("sun", "interval"));
 
     addZombie("RegularZombie", 2);
     addZombie("BucketHeadZombie", 1);
     addZombie("Gargantuar", 3);
     addZombie("RegularZombie", 5);
-    generateSun();
+
 }
 
 void Game::run()
@@ -55,13 +56,14 @@ void Game::processEvents()
                 bool iconToggled = false;
                 for (auto &card : cards)
                 {
-                    if (card->getSprite().getGlobalBounds().contains(mousePosition))
+                    if (card->getSprite().getGlobalBounds().contains(mousePosition) && (sun_valet >= card->getPrice()))
                     {
                         sf::Vector2f cardPosition = card->getSprite().getPosition();
                         if (!select_icon.isHidden() && select_icon.getSprite().getPosition() == cardPosition)
                         {
                             select_icon.hide();
                             selected_plant = "";
+                            selected_plant_price = 0;
                             iconToggled = true;
                             break;
                         }
@@ -70,6 +72,7 @@ void Game::processEvents()
                             select_icon.setPosition(cardPosition.x, cardPosition.y);
                             select_icon.unhide();
                             selected_plant = card->getPlantName();
+                            selected_plant_price = card->getPrice();
                             iconToggled = true;
                             break;
                         }
@@ -95,7 +98,9 @@ void Game::processEvents()
                             {
                                 positionSpriteToMatch(defenderPlant_plants.back()->getSprite(), place->getSprite());
                             }
+                            sun_valet -= selected_plant_price;
                             selected_plant = "";
+                            selected_plant_price = 0;
                         }
                     }
                 }
@@ -143,6 +148,7 @@ void Game::update()
     updateZombiesInLine(elapsedTime, line4_zombies);
     updateZombiesInLine(elapsedTime, line5_zombies);
     updateBullets(elapsedTime);
+    autoSunSpawn(elapsedTime);
 }
 
 void Game::render()
@@ -318,16 +324,6 @@ void Game::addZombie(const std::string &zombieSubclassName, int line)
     }
 }
 
-void Game::scaleSpriteToMatch(sf::Sprite &newSprite, const sf::Sprite &oldSprite)
-{
-    sf::FloatRect oldBounds = oldSprite.getGlobalBounds();
-    sf::FloatRect newBounds = newSprite.getGlobalBounds();
-    float scaleX = oldBounds.width / newBounds.width;
-    float scaleY = oldBounds.height / newBounds.height;
-    std::cout << "oldBounds.width" << scaleX << "scaleY" << scaleY << std::endl;
-    std::cout << "scaleX" << scaleX << "scaleY" << scaleY << std::endl;
-    newSprite.setScale(scaleY, scaleY);
-}
 
 void Game::positionSpriteToMatch(sf::Sprite &newSprite, const sf::Sprite &oldSprite)
 {
@@ -389,7 +385,7 @@ int generateRandomNumber(int Min, int Max)
 void Game::generateSun(int x, int y)
 {
     assetManager.LoadTexture("Sun_Idle_Animation", SUN_ITEM_MOVING_ANIMATION_PATH);
-    assetManager.LoadAnimation("Sun_Idle_Animation", SUN_ITEM_MOVING_ANIMATION_PATH, 1240, 1420, 12, 170, true);
+    assetManager.LoadAnimation("Sun_Idle_Animation", SUN_ITEM_MOVING_ANIMATION_PATH, 1240, 1420, 12, 270, true);
     auto sun = std::make_unique<Sun>(items_properties);
     sun->setTexture(assetManager.GetTexture("Sun_Idle_Animation"));
     sun->addAnimation("Falling", assetManager.GetAnimation("Sun_Idle_Animation"));
@@ -444,15 +440,15 @@ void Game::setupBackground()
 void Game::setupCrads()
 {
     sf::Vector2f new_card_position = normalizePosition(-95, -80);
-    cards.push_back(std::make_unique<Card>("SunFlower", SUNFLOWER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    cards.push_back(std::make_unique<Card>("SunFlower",50 , SUNFLOWER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
     new_card_position = normalizePosition(-95, -45);
-    cards.push_back(std::make_unique<Card>("PeaShooter", PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    cards.push_back(std::make_unique<Card>("PeaShooter",100 , PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
     new_card_position = normalizePosition(-95, -10);
-    cards.push_back(std::make_unique<Card>("SnowPea", SNOW_PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    cards.push_back(std::make_unique<Card>("SnowPea",175 , SNOW_PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
     new_card_position = normalizePosition(-95, 25);
-    cards.push_back(std::make_unique<Card>("WallNut", WALL_NUT_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    cards.push_back(std::make_unique<Card>("WallNut",50 , WALL_NUT_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
     new_card_position = normalizePosition(-83, -99);
-    auto sunBank = std::make_unique<Card>("bank", SUN_BANK_IMAGE_PATH, new_card_position.x, new_card_position.y);
+    auto sunBank = std::make_unique<Card>("bank",0, SUN_BANK_IMAGE_PATH, new_card_position.x, new_card_position.y);
     sunBank->getSprite().setScale(0.8, 0.7);
 
     for (auto &card : cards)
@@ -514,6 +510,16 @@ void Game::updateSuns(sf::Time elapsedTime)
     for (auto &sun : suns)
     {
         sun->update(elapsedTime);
+    }
+}
+
+void Game::autoSunSpawn(sf::Time elapsedTime)
+{
+    totalTime += elapsedTime;
+    if (totalTime.asSeconds() >= sun_generate_interval)
+    {
+        generateSun();
+        totalTime = sf::Time::Zero;
     }
 }
 

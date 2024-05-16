@@ -41,8 +41,6 @@ private:
     sf::Vector2f normalizePosition(int x, int y);
     void resizeSpriteToScreenXPercentage(sf::Sprite &sprite, float percentage, sf::RenderWindow &window);
     void createPlant(const std::string &plantSubclassName);
-    std::string selected_plant;
-    void scaleSpriteToMatch(sf::Sprite &newSprite, const sf::Sprite &oldSprite);
     void positionSpriteToMatch(sf::Sprite &newSprite, const sf::Sprite &oldSprite);
     void drawSpriteDebugOutline(sf::RenderWindow &window, const sf::Sprite &sprite);
     std::unique_ptr<Zombie> createZombie(const std::string &zombieSubclassName);
@@ -51,7 +49,7 @@ private:
     bool spriteRectangleIntersect(const sf::Sprite &sprite, const sf::RectangleShape &rectangle);
     void playSound(const std::string soundPath);
     void textUpdated();
-    void generateSun(int x = 0, int y = -110);
+    void generateSun(int x = 0, int y = 0);
     void moveSuns();
     void setupMusic();
     void setupBackground();
@@ -69,6 +67,7 @@ private:
     void renderZombiesInLine(std::vector<std::unique_ptr<Zombie>> &lineN_zombies);
     void renderBullets();
     void renderSuns();
+    void autoSunSpawn(sf::Time elapsedTime);
 
     int sun_valet = 0;
     sf::RenderWindow window;
@@ -83,6 +82,7 @@ private:
     sf::Font font;
     std::vector<std::unique_ptr<Icon>> places;
     sf::Clock clock;
+    sf::Time totalTime = sf::Time::Zero;
     std::vector<std::unique_ptr<ShooterPlant>> shooterPlant_plants;
     std::vector<std::unique_ptr<SunProducerPlant>> sunProducerPlant_plants;
     std::vector<std::unique_ptr<DefenderPlant>> defenderPlant_plants;
@@ -96,6 +96,9 @@ private:
     FileHandler plants_properties;
     FileHandler zombies_properties;
     FileHandler items_properties;
+    std::string selected_plant;
+    int selected_plant_price;
+    int sun_generate_interval;
 };
 
 #endif // GAME_H
