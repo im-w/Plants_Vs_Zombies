@@ -4,6 +4,8 @@
 #include <string>
 
 const std::string BACKGROUND_IMAGE_PATH = "./assets/images/backgrounds/day-background.jpg";
+const std::string VICTORY_BACKGROUND_IMAGE_PATH = "./assets/images/gui/game-win.png";
+const std::string EATING_BRAIN_IMAGE_PATH = "./assets/images/gui/eating-brain.png";
 const std::string SUNFLOWER_CARD_IMAGE_PATH = "./assets/images/cards/sunflower-card.png";
 const std::string MELON_PLUT_CARD_IMAGE_PATH = "./assets/images/cards/melon-plut-card.png";
 const std::string PEA_SHOOTER_CARD_IMAGE_PATH = "./assets/images/cards/pea-shooter-card.png";
@@ -60,6 +62,8 @@ const std::string EVIL_LAUGH_SOUND_PATH = "./assets/sounds/evil-laugh.ogg";
 const std::string HORRIBLE_BRAINS_SOUND_PATH = "./assets/sounds/brains.ogg";
 const std::string SCREAM_SOUND_PATH = "./assets/sounds/scream.ogg";
 const std::string UI_FONT_PATH = "./assets/fonts/ui-font.ttf";
+const std::string ZOMBIE_FONT_PATH = "./assets/fonts/game-loos-font.ttf";
+const std::string ZOMBIE_WIN_FONT_PATH = "./assets/fonts/game-win-font.ttf";
 const std::string PLANTS_PROPERTIES_PATH = "./assets/properties/Plants.csv";
 const std::string ZOMBIES_PROPERTIES_PATH = "./assets/properties/Zombies.csv";
 const std::string ITEMS_PROPERTIES_PATH = "./assets/properties/Items.csv";

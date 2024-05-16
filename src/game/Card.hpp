@@ -6,7 +6,7 @@
 class Card
 {
 public:
-    Card(std::string plant_subclass_name, int price, const std::string &imagePath, float x, float y);
+    Card(std::string plant_subclass_name,int price, const std::string &imagePath, float x, float y);
     void setPosition(float x, float y);
     void draw(sf::RenderWindow &window);
     sf::Sprite &getSprite();

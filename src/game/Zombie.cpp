@@ -18,8 +18,8 @@ void Zombie::initHitbox()
     sf::FloatRect zombieBounds = getSprite().getGlobalBounds();
     float offsetX = (zombieBounds.width - 5) / 2.0f - (hitbox.getSize().x / 2.0f);
     float offsetY = (zombieBounds.height - 5) / 2.0f - (hitbox.getSize().y / 2.0f);
-    hitbox.setSize(sf::Vector2f(5, 5));
-    hitbox.setPosition(zombieBounds.left + offsetX * 10, zombieBounds.top + offsetY * 10);
+    hitbox.setSize(sf::Vector2f(25, 25));
+    hitbox.setPosition(zombieBounds.left + offsetX * 10, zombieBounds.top + offsetY * 10 - 10);
 }
 
 sf::RectangleShape &Zombie::getHitbox()
@@ -73,7 +73,7 @@ void Zombie::move(sf::Time deltaTime)
     sf::FloatRect zombieBounds = getSprite().getGlobalBounds();
     float offsetX = zombieBounds.width * 0.05f;
     float offsetY = zombieBounds.height * 0.05f;
-    hitbox.setPosition(newX + offsetX * 10, currentPosition.y + offsetY * 10);
+    hitbox.setPosition(newX + offsetX * 10, currentPosition.y + offsetY * 10 - 10);
 }
 
 void Zombie::freezeFor(sf::Time duration)

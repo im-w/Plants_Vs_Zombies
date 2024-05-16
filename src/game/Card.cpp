@@ -1,6 +1,6 @@
 #include "Card.hpp"
 
-Card::Card(std::string plant_subclass_name, int price, const std::string &imagePath, float x, float y)
+Card::Card(std::string plant_subclass_name,int price ,const std::string &imagePath, float x, float y)
 {
     if (!m_texture.loadFromFile(imagePath))
     {

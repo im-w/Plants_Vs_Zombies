@@ -32,6 +32,7 @@ class Game
 {
 public:
     Game();
+    virtual ~Game(){};
     void run();
 
 private:
@@ -42,13 +43,16 @@ private:
     void resizeSpriteToScreenXPercentage(sf::Sprite &sprite, float percentage, sf::RenderWindow &window);
     void createPlant(const std::string &plantSubclassName);
     void positionSpriteToMatch(sf::Sprite &newSprite, const sf::Sprite &oldSprite);
-    void drawSpriteDebugOutline(sf::RenderWindow &window, const sf::Sprite &sprite);
     std::unique_ptr<Zombie> createZombie(const std::string &zombieSubclassName);
     void addZombie(const std::string &zombieSubclassName, int line);
     bool spritesIntersect(const sf::Sprite &sprite1, const sf::Sprite &sprite2);
     bool spriteRectangleIntersect(const sf::Sprite &sprite, const sf::RectangleShape &rectangle);
     void playSound(const std::string soundPath);
     void textUpdated();
+    void loosingMassage();
+    void winMassage();
+    void gameLoos(float x);
+    void gameWin();
     void generateSun(int x = 0, int y = 0);
     void moveSuns();
     void setupMusic();
@@ -70,16 +74,28 @@ private:
     void autoSunSpawn(sf::Time elapsedTime);
 
     int sun_valet = 0;
+    int numberOfRaiderZombies = 10;
+    bool loosingStatement = false;
+    bool victoryStatement = false;
+    float loosingLinePosition_x = 613.333f;
+    std::string selected_plant;
     sf::RenderWindow window;
     sf::ContextSettings settings;
     AssetManager assetManager;
     sf::Sprite backgroundSprite;
+    sf::Sprite victoryBackground;
+    sf::Sprite loosingBackground;
+    sf::Sprite brainEating;
     std::vector<std::unique_ptr<Card>> cards;
     Icon select_icon;
     sf::Music music;
     sf::Music sound;
     sf::Text sunGained;
+    sf::Text zombieAteYourBrain;
+    sf::Text winText;
     sf::Font font;
+    sf::Font zombieFont;
+    sf::Font winFont;
     std::vector<std::unique_ptr<Icon>> places;
     sf::Clock clock;
     sf::Time totalTime = sf::Time::Zero;
@@ -96,7 +112,6 @@ private:
     FileHandler plants_properties;
     FileHandler zombies_properties;
     FileHandler items_properties;
-    std::string selected_plant;
     int selected_plant_price;
     int sun_generate_interval;
 };

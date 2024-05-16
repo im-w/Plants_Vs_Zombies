@@ -3,26 +3,70 @@
 Game::Game() : window(sf::VideoMode(1920, 1080), "Plants vs. Zombies", sf::Style::Default), plants_properties(PLANTS_PROPERTIES_PATH), zombies_properties(ZOMBIES_PROPERTIES_PATH), items_properties(ITEMS_PROPERTIES_PATH)
 {
     window.setFramerateLimit(60);
-    setupMusic();
-    setupBackground();
-    setupCrads();
-    setupIcons();
-    sun_generate_interval = std::stoi(items_properties.getData("sun", "interval"));
+    if (!victoryStatement && !loosingStatement)
+    {
+        setupMusic();
+        setupBackground();
+        setupCrads();
+        setupIcons();
+        sun_generate_interval = std::stoi(items_properties.getData("sun", "interval"));
 
-    addZombie("RegularZombie", 2);
-    addZombie("BucketHeadZombie", 1);
-    addZombie("Gargantuar", 3);
-    addZombie("RegularZombie", 5);
-
+        addZombie("RegularZombie", 2);
+        addZombie("BucketHeadZombie", 1);
+        addZombie("Gargantuar", 3);
+        addZombie("RegularZombie", 5);
+        addZombie("Gargantuar", 4);
+    }
 }
 
 void Game::run()
 {
     while (window.isOpen())
     {
+        if (!loosingStatement && !victoryStatement)
+        {
+            processEvents();
+            update();
+            render();
+        }
+        else
+        {
+            break;
+        }
+    }
+    music.stop();
+    if (loosingStatement)
+    {
+        playSound(EVIL_LAUGH_SOUND_PATH);
+        sf::sleep(sf::seconds(3));
+        playSound(HORRIBLE_BRAINS_SOUND_PATH);
+        sf::sleep(sf::seconds(1.5));
+        playSound(SCREAM_SOUND_PATH);
+    }
+    if (victoryStatement)
+    {
+        playSound(VICTORY_SOUND_PATH);
+    }
+    while (window.isOpen())
+    {
         processEvents();
-        update();
-        render();
+        if (loosingStatement)
+        {
+            loosingMassage();
+            window.clear();
+            window.draw(loosingBackground);
+            window.draw(brainEating);
+            window.draw(zombieAteYourBrain);
+            window.display();
+        }
+        else
+        {
+            winMassage();
+            window.clear();
+            window.draw(victoryBackground);
+            window.draw(winText);
+            window.display();
+        }
     }
 }
 
@@ -157,15 +201,15 @@ void Game::render()
     window.draw(backgroundSprite);
     renderCards();
     renderPlaces();
-    renderShooterPlants();
-    renderSunProducerPlants();
-    renderDefenderPlants();
     renderZombiesInLine(line1_zombies);
     renderZombiesInLine(line2_zombies);
     renderZombiesInLine(line3_zombies);
     renderZombiesInLine(line4_zombies);
     renderZombiesInLine(line5_zombies);
     renderBullets();
+    renderShooterPlants();
+    renderSunProducerPlants();
+    renderDefenderPlants();
     textUpdated();
     window.draw(sunGained);
     renderSuns();
@@ -324,22 +368,10 @@ void Game::addZombie(const std::string &zombieSubclassName, int line)
     }
 }
 
-
 void Game::positionSpriteToMatch(sf::Sprite &newSprite, const sf::Sprite &oldSprite)
 {
     sf::Vector2f oldPosition = oldSprite.getPosition();
     newSprite.setPosition(oldPosition);
-}
-
-void Game::drawSpriteDebugOutline(sf::RenderWindow &window, const sf::Sprite &sprite)
-{
-    sf::FloatRect bounds = sprite.getGlobalBounds();
-    sf::RectangleShape outline(sf::Vector2f(bounds.width, bounds.height));
-    outline.setPosition(bounds.left, bounds.top);
-    outline.setFillColor(sf::Color::Transparent);
-    outline.setOutlineColor(sf::Color::Red);
-    outline.setOutlineThickness(2.0f);
-    window.draw(outline);
 }
 
 bool Game::spritesIntersect(const sf::Sprite &sprite1, const sf::Sprite &sprite2)
@@ -374,6 +406,38 @@ void Game::textUpdated()
     sunGained.setFont(font);
     sunGained.setFillColor(sf::Color::Black);
     sunGained.setCharacterSize(60);
+}
+
+void Game::loosingMassage()
+{
+    if (!zombieFont.loadFromFile(ZOMBIE_FONT_PATH))
+    {
+        std::cerr << "Error loading font file!" << std::endl;
+        // Handle font loading failure
+    }
+    sf::Vector2f zombieAteYourBrainPosition = normalizePosition(-63, -98);
+    zombieAteYourBrain.setPosition(zombieAteYourBrainPosition);
+    zombieAteYourBrain.setString("   THE ZOMBIES \n\n\nATE YOUR BRAINS!");
+    zombieAteYourBrain.setFont(zombieFont);
+    zombieAteYourBrain.setFillColor(sf::Color::Green);
+    zombieAteYourBrain.setCharacterSize(200);
+}
+
+void Game::winMassage()
+{
+    if (!winFont.loadFromFile(ZOMBIE_WIN_FONT_PATH))
+    {
+        std::cerr << "Error loading font file!" << std::endl;
+        // Handle font loading failure
+    }
+    sf::Vector2f winMsgPosition = normalizePosition(-82, 2);
+    winText.setPosition(winMsgPosition);
+    winText.setString("YOU ARE KILLED ALL ZOMBIES!");
+    winText.setFont(winFont);
+    winText.setFillColor(sf::Color::Green);
+    winText.setOutlineColor(sf::Color::Black);
+    winText.setOutlineThickness(1);
+    winText.setCharacterSize(50);
 }
 
 int generateRandomNumber(int Min, int Max)
@@ -421,6 +485,8 @@ void Game::moveSuns()
 
 void Game::setupMusic()
 {
+    playSound(ZOMBIES_ARE_COMMING_SOUND_PATH);
+    sf::sleep(sf::seconds(3));
     music.openFromFile(MAIN_MUSIC_PLAYGROUND_PATH);
     music.setLoop(true);
     music.play();
@@ -428,6 +494,14 @@ void Game::setupMusic()
 
 void Game::setupBackground()
 {
+    assetManager.LoadTexture("victory-background", VICTORY_BACKGROUND_IMAGE_PATH);
+    victoryBackground.setTexture(assetManager.GetTexture("victory-background"));
+    victoryBackground.setScale(2, 1.88);
+    loosingBackground.setColor(sf::Color::Black);
+    assetManager.LoadTexture("eating-brain", EATING_BRAIN_IMAGE_PATH);
+    brainEating.setTexture(assetManager.GetTexture("eating-brain"));
+    brainEating.setPosition(772.f, 230.f);
+
     assetManager.LoadTexture("background", BACKGROUND_IMAGE_PATH);
     backgroundSprite.setTexture(assetManager.GetTexture("background"));
     sf::Vector2u textureSize = backgroundSprite.getTexture()->getSize();
@@ -439,16 +513,16 @@ void Game::setupBackground()
 
 void Game::setupCrads()
 {
-    sf::Vector2f new_card_position = normalizePosition(-95, -80);
-    cards.push_back(std::make_unique<Card>("SunFlower",50 , SUNFLOWER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
-    new_card_position = normalizePosition(-95, -45);
-    cards.push_back(std::make_unique<Card>("PeaShooter",100 , PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
-    new_card_position = normalizePosition(-95, -10);
-    cards.push_back(std::make_unique<Card>("SnowPea",175 , SNOW_PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
-    new_card_position = normalizePosition(-95, 25);
-    cards.push_back(std::make_unique<Card>("WallNut",50 , WALL_NUT_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    sf::Vector2f new_card_position = normalizePosition(-95, -99);
+    cards.push_back(std::make_unique<Card>("SunFlower", 50, SUNFLOWER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    new_card_position = normalizePosition(-95, -64);
+    cards.push_back(std::make_unique<Card>("PeaShooter", 100, PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    new_card_position = normalizePosition(-95, -29);
+    cards.push_back(std::make_unique<Card>("SnowPea", 175, SNOW_PEA_SHOOTER_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
+    new_card_position = normalizePosition(-95, 6);
+    cards.push_back(std::make_unique<Card>("WallNut", 50, WALL_NUT_CARD_IMAGE_PATH, new_card_position.x, new_card_position.y));
     new_card_position = normalizePosition(-83, -99);
-    auto sunBank = std::make_unique<Card>("bank",0, SUN_BANK_IMAGE_PATH, new_card_position.x, new_card_position.y);
+    auto sunBank = std::make_unique<Card>("bank", 0, SUN_BANK_IMAGE_PATH, new_card_position.x, new_card_position.y);
     sunBank->getSprite().setScale(0.8, 0.7);
 
     for (auto &card : cards)
@@ -527,6 +601,8 @@ void Game::updateZombiesInLine(sf::Time elapsedTime, std::vector<std::unique_ptr
 {
     for (auto &zombie : lineN_zombies)
     {
+        gameLoos(zombie->getHitbox().getPosition().x);
+        gameWin();
         zombie->update(elapsedTime);
         zombie->move(elapsedTime);
         for (auto &bullet : bullets)
@@ -615,7 +691,6 @@ void Game::renderShooterPlants()
     for (auto &plant : shooterPlant_plants)
     {
         plant->draw(window);
-        drawSpriteDebugOutline(window, plant->getSprite());
         if (plant->isDead())
         {
             shooterPlant_plants.erase(std::remove(shooterPlant_plants.begin(), shooterPlant_plants.end(), plant), shooterPlant_plants.end());
@@ -628,7 +703,6 @@ void Game::renderSunProducerPlants()
     for (auto &plant : sunProducerPlant_plants)
     {
         plant->draw(window);
-        drawSpriteDebugOutline(window, plant->getSprite());
         if (plant->isDead())
         {
             sunProducerPlant_plants.erase(std::remove(sunProducerPlant_plants.begin(), sunProducerPlant_plants.end(), plant), sunProducerPlant_plants.end());
@@ -641,7 +715,6 @@ void Game::renderDefenderPlants()
     for (auto &plant : defenderPlant_plants)
     {
         plant->draw(window);
-        drawSpriteDebugOutline(window, plant->getSprite());
         if (plant->isDead())
         {
             defenderPlant_plants.erase(std::remove(defenderPlant_plants.begin(), defenderPlant_plants.end(), plant), defenderPlant_plants.end());
@@ -654,11 +727,10 @@ void Game::renderZombiesInLine(std::vector<std::unique_ptr<Zombie>> &lineN_zombi
     for (auto &zombie : lineN_zombies)
     {
         zombie->draw(window);
-        zombie->drawHitbox(window);
-        drawSpriteDebugOutline(window, zombie->getSprite());
         if (zombie->isDead())
         {
             lineN_zombies.erase(std::remove(line1_zombies.begin(), line1_zombies.end(), zombie), line1_zombies.end());
+            numberOfRaiderZombies--;
         }
     }
 }
@@ -668,7 +740,6 @@ void Game::renderBullets()
     for (auto &bullet : bullets)
     {
         bullet->draw(window);
-        drawSpriteDebugOutline(window, bullet->getSprite());
         if (bullet->getPosition().x > window.getSize().x)
         {
             bullets.erase(std::remove(bullets.begin(), bullets.end(), bullet), bullets.end());
@@ -683,5 +754,21 @@ void Game::renderSuns()
     for (auto &sun : suns)
     {
         sun->draw(window);
+    }
+}
+
+void Game::gameLoos(float x)
+{
+    if (loosingLinePosition_x > x)
+    {
+        loosingStatement = true;
+    }
+}
+
+void Game::gameWin()
+{
+    if (numberOfRaiderZombies == 0)
+    {
+        victoryStatement = true;
     }
 }

@@ -8,10 +8,11 @@ class Sun : public AnimatedObject
 {
 protected:
     int speed;
+
 public:
     bool MoveStatus;
     int bottom;
-    Sun(FileHandler items_properties);
+    Sun(FileHandler Item_csv);
     virtual ~Sun();
 };
 #endif // SUN_HPP

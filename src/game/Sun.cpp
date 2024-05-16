@@ -1,8 +1,8 @@
 #include "Sun.hpp"
 
-Sun::Sun(FileHandler items_properties)
+Sun::Sun(FileHandler Item_csv)
 {
-    speed = std::stoi(items_properties.getData("sun", "speed"));
+    speed = std::stoi(Item_csv.getData("sun", "speed"));
     MoveStatus = true;
 }
 

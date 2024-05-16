@@ -1,6 +1,6 @@
-type,damage,health,cooldown,hit rate,bullet speed,price
-PeaShooter,5,40,5,15,40,100
-SnowPea,5,30,9,15,40,175
-MelonPlut,15,20,10,8,7,8
-SunFlower,0,30,10,12,0,50
-WallNut,0,200,10,0,0,50
+type,damage,health,cooldown,hit rate,bullet speed,price,none
+PeaShooter,5,40,5,15,40,100,0
+SnowPea,5,30,9,15,40,175,0
+MelonPlut,15,20,10,8,7,8,0
+SunFlower,0,30,10,12,0,50,0
+WallNut,0,200,10,0,0,50,0
