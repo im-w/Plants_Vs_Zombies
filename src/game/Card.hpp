@@ -3,12 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 
-class Card {
+class Card
+{
 public:
-    Card(std::string plant_subclass_name, const std::string& imagePath, float x, float y);
+    Card(std::string plant_subclass_name, const std::string &imagePath, float x, float y);
     void setPosition(float x, float y);
-    void draw(sf::RenderWindow& window);
-    sf::Sprite& getSprite();
+    void draw(sf::RenderWindow &window);
+    sf::Sprite &getSprite();
     std::string getPlantName();
 
 private:

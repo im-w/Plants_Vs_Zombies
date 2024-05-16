@@ -4,7 +4,8 @@
 #include "DefenderPlant.hpp"
 #include "../utils/FileHandler.hpp"
 
-class WallNut : public DefenderPlant {
+class WallNut : public DefenderPlant
+{
 public:
     WallNut(FileHandler plants_properties);
     virtual ~WallNut();

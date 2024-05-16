@@ -6,14 +6,13 @@
 #include "PeaBullet.hpp"
 #include "GamePaths.hpp"
 
-class PeaShooter : public ShooterPlant {
+class PeaShooter : public ShooterPlant
+{
 protected:
-    
-
 public:
     PeaShooter(FileHandler plants_properties);
     virtual ~PeaShooter();
-    virtual void shoot(std::vector<std::unique_ptr<Bullet>>& bullets , AssetManager& assetManager);
+    virtual void shoot(std::vector<std::unique_ptr<Bullet>> &bullets, AssetManager &assetManager);
 };
 
 #endif // PEASHOOTER_HPP

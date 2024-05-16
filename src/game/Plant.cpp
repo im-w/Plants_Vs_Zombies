@@ -4,12 +4,15 @@ Plant::Plant(int health, int cooldown, int price) : health(health), cooldown(coo
 
 Plant::~Plant() {}
 
-void Plant::takeDamage(int damage) {
+void Plant::takeDamage(int damage)
+{
     health -= damage;
 }
 
-bool Plant::isDead() {
-    if (health <= 0) {
+bool Plant::isDead()
+{
+    if (health <= 0)
+    {
         return true;
     }
     return false;

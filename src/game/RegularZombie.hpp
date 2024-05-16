@@ -4,13 +4,12 @@
 #include "Zombie.hpp"
 #include "../utils/FileHandler.hpp"
 
-class RegularZombie : public Zombie {
+class RegularZombie : public Zombie
+{
 protected:
-
-
 public:
     RegularZombie(FileHandler Zombies_csv);
     virtual ~RegularZombie();
 };
 
-#endif //REGULARZOMBIE_HPP
+#endif // REGULARZOMBIE_HPP

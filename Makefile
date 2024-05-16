@@ -11,7 +11,7 @@ SRC = $(wildcard src/game/*.cpp src/utils/*.cpp src/main.cpp)
 OBJ = $(patsubst src/%,build/%,$(SRC:.cpp=.o))
 
 # Executable name
-EXEC = game
+EXEC = pvz.out
 
 # Default rule
 all: directories $(EXEC)

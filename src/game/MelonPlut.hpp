@@ -4,7 +4,8 @@
 #include "ShooterPlant.hpp"
 #include "../utils/FileHandler.hpp"
 
-class MelonPlut : public ShooterPlant {
+class MelonPlut : public ShooterPlant
+{
 public:
     MelonPlut(FileHandler plants_properties);
     virtual ~MelonPlut();

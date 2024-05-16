@@ -3,7 +3,8 @@
 
 #include "AnimatedObject.hpp"
 
-class Plant : public AnimatedObject {
+class Plant : public AnimatedObject
+{
 protected:
     int health;
     int cooldown;
@@ -14,8 +15,6 @@ public:
     virtual ~Plant();
     void takeDamage(int damage);
     bool isDead();
-
-
 };
 
 #endif // PLANT_HPP

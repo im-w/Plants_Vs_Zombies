@@ -3,7 +3,8 @@
 
 #include "Plant.hpp"
 
-class SunProducerPlant : public Plant {
+class SunProducerPlant : public Plant
+{
 public:
     SunProducerPlant(int health, int cooldown, int price);
     virtual ~SunProducerPlant();

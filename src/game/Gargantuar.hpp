@@ -4,13 +4,11 @@
 #include "Zombie.hpp"
 #include "../utils/FileHandler.hpp"
 
-class Gargantuar : public Zombie {
-protected:
-
-
+class Gargantuar : public Zombie
+{
 public:
     Gargantuar(FileHandler Zombies_csv);
     virtual ~Gargantuar();
 };
 
-#endif //GARGANTUAR_HPP
+#endif // GARGANTUAR_HPP

@@ -4,13 +4,14 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class Animation {
+class Animation
+{
 public:
     Animation();
-    void init(const sf::Texture& sheet, int each_frame_x_size, int each_frame_y_size, int total_frame_number, int frame_time_in_ms, bool isLoop);
+    void init(const sf::Texture &sheet, int each_frame_x_size, int each_frame_y_size, int total_frame_number, int frame_time_in_ms, bool isLoop);
 
     void addFrame(sf::IntRect frame);
-    void setSpriteSheet(const sf::Texture& texture);
+    void setSpriteSheet(const sf::Texture &texture);
     void setFrameTime(sf::Time time);
     void play();
     void pause();
@@ -19,7 +20,7 @@ public:
     void update(sf::Time deltaTime);
     void setFrame(size_t frame);
     sf::IntRect getFrame() const;
-    const sf::Texture* getSpriteSheet() const;
+    const sf::Texture *getSpriteSheet() const;
 
 private:
     std::vector<sf::IntRect> m_frames;

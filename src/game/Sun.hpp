@@ -4,9 +4,11 @@
 #include "AnimatedObject.hpp"
 #include "../utils/FileHandler.hpp"
 
-class Sun : public AnimatedObject {
+class Sun : public AnimatedObject
+{
 protected:
     int speed;
+
 public:
     bool MoveStatus;
     int bottom;

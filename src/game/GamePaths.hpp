@@ -54,7 +54,7 @@ const std::string SUN_ITEM_MOVING_ANIMATION_PATH = "./assets/images/items/sun-mo
 const std::string MELON_ITEM_SHOOTING_ANIMATION_PATH = "./assets/images/items/shooting-melon-animation.png";
 const std::string MELON_ITEM_SPLATS_ANIMATION_PATH = "./assets/images/items/melon-splats-animation.png";
 const std::string SUN_BANK_IMAGE_PATH = "./assets/images/gui/sun-bank.png";
-const std::string MAIN_MUSIC_PLATGROUND_PATH = "./assets/musics/main-music.flac";
+const std::string MAIN_MUSIC_PLAYGROUND_PATH = "./assets/musics/main-music.flac";
 const std::string VICTORY_SOUND_PATH = "./assets/sounds/victory-sound.ogg";
 const std::string EVIL_LAUGH_SOUND_PATH = "./assets/sounds/evil-laugh.ogg";
 const std::string HORRIBLE_BRAINS_SOUND_PATH = "./assets/sounds/brains.ogg";
@@ -64,4 +64,4 @@ const std::string PLANTS_PROPERTIES_PATH = "./assets/properties/Plants.csv";
 const std::string ZOMBIES_PROPERTIES_PATH = "./assets/properties/Zombies.csv";
 const std::string ITEMS_PROPERTIES_PATH = "./assets/properties/Items.csv";
 
-#endif // ASSETPATHS_H
+#endif // GAMEPATHS_H

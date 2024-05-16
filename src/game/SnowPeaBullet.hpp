@@ -3,11 +3,11 @@
 
 #include "Bullet.hpp"
 
-class SnowPeaBullet : public Bullet {
+class SnowPeaBullet : public Bullet
+{
 public:
-    SnowPeaBullet(int bullet_speed ,int bullet_damage);
+    SnowPeaBullet(int bullet_speed, int bullet_damage, int m_bullet_slowDown);
     virtual ~SnowPeaBullet();
-    // Add any necessary methods and members specific to SnowPeaBullet
 };
 
 #endif // SNOWPEABULLET_HPP

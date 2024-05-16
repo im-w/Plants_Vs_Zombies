@@ -3,18 +3,18 @@
 
 #include <SFML/Graphics.hpp>
 
-class Icon {
+class Icon
+{
 public:
     Icon();
-    void setTexture(const sf::Texture& texture);
+    void setTexture(const sf::Texture &texture);
     void setPosition(float x, float y);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow &window);
     void hide();
     void unhide();
     bool isHidden();
-    sf::Sprite& getSprite();
+    sf::Sprite &getSprite();
     sf::Vector2f getPosition();
-    
 
 private:
     sf::Sprite m_sprite;
