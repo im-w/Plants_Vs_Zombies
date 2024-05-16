@@ -1,1 +1,2 @@
-type,speed,intervalsun,10,10
+type,speed,interval,value,none
+sun,10,10,25,0

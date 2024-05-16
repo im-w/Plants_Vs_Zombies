@@ -22,7 +22,7 @@ directories:
 	mkdir -p build/utils
 
 $(EXEC): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $^ -lsfml-graphics -lsfml-window -lsfml-system
+	$(CXX) $(CXXFLAGS) -o $@ $^ -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 build/%.o: src/%.cpp
 	mkdir -p $(dir $@)
