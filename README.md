@@ -1,5 +1,4 @@
-
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+![Logo](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/readme/Logo.jpg?raw=true)
 
 
 # Plants Vs Zombie Game
@@ -9,13 +8,15 @@ Writing PLants vs zombie base game in c++ using sfml library
 
 ## Screenshots
 
-![animation test](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![animation test](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/readme/pvz-test-animation-screenshot.png?raw=true)
 
-![select place](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![select place](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/readme/pvz-select-place-screenshot.png?raw=true)
 
-![walking zombie](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![outline](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/readme/pvz-outline-fullscreen-screenshot.png?raw=true)
 
-![sun](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![walking zombie](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/readme/pvz-walking-zombie-screanshot.png?raw=true)
+
+![sun](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/readme/pvz-sun-screenshot.png?raw=true)
 ## Installation
 
 build game with (you should install sfml cpp library before doing this)
@@ -26,5 +27,4 @@ build game with (you should install sfml cpp library before doing this)
     
 ## Documentation
 
-[Class Diagram](https://linktodocumentation)
-
+[Class Diagram](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/docs/class-diagram.md)
