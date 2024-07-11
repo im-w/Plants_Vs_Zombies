@@ -30,6 +30,6 @@ build game with (you should install sfml cpp library before doing this)
 [Class Diagram](https://github.com/im-w/Plants_Vs_Zombies_Game/blob/main/docs/class-diagram.md)
 
 
-### Contributions
+## Contributions
 
 [Milad Mazaheri](https://github.com/MiladMazaheri83)
